@@ -102,7 +102,7 @@ input_df_scaled = input_df_scaled[feature_cols]
 # Show input data
 # --------------------------
 st.subheader("Input Data Preview")
-st.dataframe(input_df_scaled.style.set_properties(**{'background-color': '#f0f0f0', 'color': 'black', 'border-color': 'black'}))
+st.dataframe(input_df.style.set_properties(**{'background-color': '#f0f0f0', 'color': 'black', 'border-color': 'black'}))
 
 st.markdown("<br>", unsafe_allow_html=True)
 
