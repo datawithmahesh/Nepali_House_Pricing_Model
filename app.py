@@ -12,6 +12,9 @@ model = pk.load(open('linear_model.pickle','rb'))
 rf_model = pk.load(open('RandomForest_model.pickle','rb'))
 gb_model = pk.load(open('GradientBoosting_model.pickle','rb'))
 
+with open('scaler.pickle', 'rb') as f:
+    scaler = pk.load(f)
+
 # Header Section
 st.markdown("""
     <div style='background-color: #4CAF50; padding: 20px; border-radius: 10px'>
@@ -65,6 +68,12 @@ input_df = pd.DataFrame({
     'lalitpur':[lalitpur]
 })
 
+# ----------------------------
+# Scale numeric features
+# ----------------------------
+numeric_cols = ['FLOOR','BEDROOM','BATHROOM','Land_in_aana','road_access_in_feet','AGE','car_parking']
+input_df[numeric_cols] = scaler.transform(input_df[numeric_cols])
+
 # Show input data
 st.subheader("Input Data Preview")
 st.dataframe(input_df.style.set_properties(**{'background-color': '#f0f0f0', 'color': 'black', 'border-color': 'black'}))
@@ -78,8 +87,6 @@ if st.button("Predict Price"):
     rf_pred = float(rf_model.predict(input_df)[0])
     gb_pred = float(gb_model.predict(input_df)[0])
 
-    
-    
     # Result Section
     st.markdown("""
         <div style='background-color: #FFEB3B; padding: 20px; border-radius: 10px'>
