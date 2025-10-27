@@ -1,5 +1,7 @@
 # Nepali Housing Price Prediction 
 
+# Nepali Housing Price Prediction 
+
 import streamlit as st
 import pandas as pd
 import pickle as pk
@@ -7,15 +9,24 @@ import pickle as pk
 # Page Config
 st.set_page_config(page_title="Nepali Housing Price Prediction", page_icon="🏠", layout="wide")
 
+# --------------------------
 # Load Models
+# --------------------------
 model = pk.load(open('linear_model.pickle','rb'))
 rf_model = pk.load(open('RandomForest_model.pickle','rb'))
 gb_model = pk.load(open('GradientBoosting_model.pickle','rb'))
 
+# Load Scaler
 with open('scaler.pickle', 'rb') as f:
     scaler = pk.load(f)
 
+# Load feature columns used during training
+with open('feature_cols.pickle', 'rb') as f:
+    feature_cols = pk.load(f)
+
+# --------------------------
 # Header Section
+# --------------------------
 st.markdown("""
     <div style='background-color: #4CAF50; padding: 20px; border-radius: 10px'>
         <h1 style='color: white; text-align: center;'>🏠 Nepali Housing Price Prediction System</h1>
@@ -25,7 +36,9 @@ st.markdown("""
 
 st.markdown("<br>", unsafe_allow_html=True)
 
+# --------------------------
 # Input Section
+# --------------------------
 st.subheader("Enter House Details")
 
 with st.container():
@@ -45,14 +58,18 @@ with st.container():
         parking = st.number_input("Car Parking", 0, 15, 0)
         district = st.selectbox("District", ["Bhaktapur", "Chitwan", "Kaski", "Kathmandu", "Lalitpur"])
 
+# --------------------------
 # One-hot encoding for district
+# --------------------------
 bhaktapur = 1 if district == "Bhaktapur" else 0
 chitwan = 1 if district == "Chitwan" else 0
 kaski = 1 if district == "Kaski" else 0
 kathmandu = 1 if district == "Kathmandu" else 0
 lalitpur = 1 if district == "Lalitpur" else 0
 
+# --------------------------
 # Create input DataFrame
+# --------------------------
 input_df = pd.DataFrame({
     'FLOOR':[floor],
     'BEDROOM':[bedroom],
@@ -68,24 +85,35 @@ input_df = pd.DataFrame({
     'lalitpur':[lalitpur]
 })
 
-# ----------------------------
+# --------------------------
 # Scale numeric features
-# ----------------------------
+# --------------------------
 numeric_cols = ['FLOOR','BEDROOM','BATHROOM','Land_in_aana','road_access_in_feet','AGE','car_parking']
-input_df[numeric_cols] = scaler.transform(input_df[numeric_cols])
+scaled_values = scaler.transform(input_df[numeric_cols])
+input_df_scaled = input_df.copy()
+input_df_scaled[numeric_cols] = scaled_values
 
+# --------------------------
+# Reorder columns to match training
+# --------------------------
+input_df_scaled = input_df_scaled[feature_cols]
+
+# --------------------------
 # Show input data
+# --------------------------
 st.subheader("Input Data Preview")
-st.dataframe(input_df.style.set_properties(**{'background-color': '#f0f0f0', 'color': 'black', 'border-color': 'black'}))
+st.dataframe(input_df_scaled.style.set_properties(**{'background-color': '#f0f0f0', 'color': 'black', 'border-color': 'black'}))
 
 st.markdown("<br>", unsafe_allow_html=True)
 
+# --------------------------
 # Predict Button
+# --------------------------
 if st.button("Predict Price"):
     # Predictions from all models
-    linear_pred = float(model.predict(input_df)[0])
-    rf_pred = float(rf_model.predict(input_df)[0])
-    gb_pred = float(gb_model.predict(input_df)[0])
+    linear_pred = float(model.predict(input_df_scaled)[0])
+    rf_pred = float(rf_model.predict(input_df_scaled)[0])
+    gb_pred = float(gb_model.predict(input_df_scaled)[0])
 
     # Result Section
     st.markdown("""
@@ -101,3 +129,9 @@ if st.button("Predict Price"):
 
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>This model is developed by Mahesh Thapa</p>", unsafe_allow_html=True)
+
+
+
+
+
+

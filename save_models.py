@@ -17,7 +17,7 @@ df = pd.read_csv('final_clean_house_data.csv')
 # Step 2: Define features and target
 # ------------------------------
 # Replace with your actual feature columns
-feature_cols = ['FLOOR','BEDROOM','BATHROOM','Land_in_aana','road_access_in_feet','AGE','car_parking','bhaktapur','chitwan','kaski','kathmandu','lalitpur']
+feature_cols = ['FLOOR','BEDROOM','BATHROOM','Land_in_aana','road_access_in_feet','AGE','car_parking']
 target_col = 'price_in_crore'
 
 X = df[feature_cols]
@@ -65,5 +65,8 @@ with open('GradientBoosting_model.pickle', 'wb') as f:
 # Optional: save scaler if needed in app.py
 with open('scaler.pickle', 'wb') as f:
     pickle.dump(scaler, f)
+
+with open('feature_cols.pickle','wb') as f:
+    pickle.dump(feature_cols, f)
 
 print("All models and scaler saved successfully!")
