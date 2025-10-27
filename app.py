@@ -8,7 +8,7 @@ import pickle as pk
 st.set_page_config(page_title="Nepali Housing Price Prediction", page_icon="🏠", layout="wide")
 
 # Load Models
-linear_model = pk.load(open('linear_model.pickle','rb'))
+model = pk.load(open('linear_model.pickle','rb'))
 rf_model = pk.load(open('RandomForest_model.pickle','rb'))
 gb_model = pk.load(open('GradientBoosting_model.pickle','rb'))
 
@@ -74,7 +74,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 # Predict Button
 if st.button("Predict Price"):
     # Predictions from all models
-    linear_pred = float(linear_model.predict(input_df)[0])
+    linear_pred = float(model.predict(input_df)[0])
     rf_pred = float(rf_model.predict(input_df)[0])
     gb_pred = float(gb_model.predict(input_df)[0])
 
